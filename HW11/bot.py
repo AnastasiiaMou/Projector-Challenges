@@ -1,7 +1,12 @@
 import telebot
 import requests
+import os
+from dotenv import load_dotenv
 
-bot = telebot.TeleBot("6639974974:AAHgr9BEM979um3WUNkl97oQbmGOZmZboVM")
+load_dotenv()
+TOKEN = os.getenv("TOKEN")
+
+bot = telebot.TeleBot(TOKEN)
 
 
 def search_gifs(searched_gif, api_key, limit=5):
