@@ -1,4 +1,9 @@
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 
 
 def search_gifs(searched_gif, api_key):
@@ -22,7 +27,7 @@ def search_gifs(searched_gif, api_key):
 
 
 def main():
-    API_KEY = "nXLp5bVa5X9zH6N7CwPWlEwuxHmyM27Q"
+    API_KEY = API_KEY
     searched_gif = input("Enter the search gif: ")
     gif_link = search_gifs(searched_gif, API_KEY)
 
