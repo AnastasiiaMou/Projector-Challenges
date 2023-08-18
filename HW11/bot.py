@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
+API_KEY = os.getenv("API_KEY")
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -31,17 +32,17 @@ def search_gifs(searched_gif, api_key, limit=5):
 
 @bot.message_handler(func=lambda message: True)
 def get_user_text(message):
-    API_KEY = "nXLp5bVa5X9zH6N7CwPWlEwuxHmyM27Q"
+    API_KEY = API_KEY
     searched_gif = message.text
     gif_links = search_gifs(searched_gif, API_KEY, limit=5)
 
-    if gif_links:
-        for gif_link in gif_links:
-            bot.send_message(
-                message.chat.id, f"Your mood is: {gif_link}", parse_mode="html"
-            )
-    else:
+    if not gif_links:
         bot.send_message(message.chat.id, "No GIFs found")
+        return
+    for gif_link in gif_links:
+        bot.send_message(
+            message.chat.id, f"Your mood is: {gif_link}", parse_mode="html"
+        )
 
 
 if __name__ == "__main__":
