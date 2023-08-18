@@ -59,6 +59,9 @@
 
 
 # Task 3
+import unittest
+
+
 class Account:
     def __init__(self, balance, account_number):
         self._balance = balance
@@ -95,8 +98,8 @@ class SavingsAccount(Account):
         super().__init__(balance, account_number)
         self.interest = interest
 
-        def add_interest(self):
-            self.balance += self.balance * self.interest
+    def add_interest(self):
+        self._balance += self._balance * self.interest
 
 
 class CurrentAccount(Account):
@@ -109,29 +112,78 @@ class Bank:
     def __init__(self):
         self.accounts = []
 
-        def open_account(self, account):
-            self.accounts.appent(account)
+    def open_account(self, account):
+        self.accounts.append(account)
 
-        def close_account(self, account_number):
-            self.account = [
-                account
-                for account in self.accounts
-                if account.get_account_number() != account_number
-            ]
+    def close_account(self, account_number):
+        self.accounts = [
+            account
+            for account in self.accounts
+            if account.get_account_number() != account_number
+        ]
 
-        def pay_div(self, amount):
-            for account in self.accounts:
-                account.deposit(amount)
+    def pay_div(self, amount):
+        for account in self.accounts:
+            account.deposit(amount)
 
-        def update(self):
-            for account in self.accounts:
-                if isinstance(account, SavingsAccount):
-                    account.add_interest()
-                elif isinstance(account, CurrentAccount) and account.get_balance() < 0:
-                    print("YOu are overdraft")
+    def update(self):
+        for account in self.accounts:
+            if isinstance(account, SavingsAccount):
+                account.add_interest()
+            elif isinstance(account, CurrentAccount) and account.get_balance() < 0:
+                print("You are overdraft")
 
 
 savings_account1 = SavingsAccount(1000, "SA001", 0.05)
 print(savings_account1)
 current_account1 = CurrentAccount(500, "CA001", -500)
 print(current_account1)
+
+
+class TestBankMethods(unittest.TestCase):
+    def setUp(self):
+        self.bank = Bank()
+
+    def test_open_account(self):
+        # Open an account
+        initial_balance = 1000
+        account_number = "SA001"
+        savings_account1 = SavingsAccount(initial_balance, account_number, 0.05)
+        self.bank.open_account(savings_account1)
+
+        # Check if the account is in the bank's list of accounts
+        self.assertIn(savings_account1, self.bank.accounts)
+
+        # Check if the account has the correct initial balance
+        self.assertEqual(savings_account1.get_balance(), initial_balance)
+
+    def test_update_method(self):
+        # Open a current account with negative balance
+        initial_balance = -200
+        account_number = "CA001"
+        current_account = CurrentAccount(initial_balance, account_number, -500)
+        self.bank.open_account(current_account)
+
+        # Redirect the stdout to capture the printed message
+        from io import StringIO
+        import sys
+
+        saved_stdout = sys.stdout
+        sys.stdout = StringIO()
+
+        # Update the bank
+        self.bank.update()
+
+        # Get the printed message
+        printed_output = sys.stdout.getvalue().strip()
+
+        # Restore stdout
+        sys.stdout = saved_stdout
+
+        # Check if the printed message matches the expected message
+        expected_message = "You are overdraft"
+        self.assertIn(expected_message, printed_output)
+
+
+if __name__ == "__main__":
+    unittest.main()
